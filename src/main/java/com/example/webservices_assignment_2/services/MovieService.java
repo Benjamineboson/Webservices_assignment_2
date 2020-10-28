@@ -65,8 +65,8 @@ public class MovieService {
 
     @CacheEvict(value = "userCache",key="#id")
     public void updateMovie(String id, Movie movie){
-
         if (!movieRepository.existsById(id)){
+            log.error("Could not find the movie you were looking for.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("Could not find movie with id %s",id));
         }
         movie.setMovieId(id);
@@ -76,6 +76,7 @@ public class MovieService {
     @CacheEvict(value = "userCache",key = "#id")
     public void deleteMovie (String id){
         if (!movieRepository.existsById(id)){
+            log.error("Could not find the movie you were looking for.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("Could not find movie with id %s",id));
         }
@@ -84,9 +85,11 @@ public class MovieService {
 
     public Movie borrowMovie(String id){
         if (!movieRepository.existsById(id)){
+            log.error("Could not find the movie you were looking for.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("Could not find movie with id %s",id));
         }
         if (movieRepository.findById(id).get().isBorrowed()){
+            log.warn("Attempt made to borrow a movie that is unavailable.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"This movie has already been borrowed");
         }
         Movie movie = movieRepository.findById(id).get();
@@ -100,11 +103,13 @@ public class MovieService {
 
     public Movie returnMovie (String id) {
         if (!movieRepository.existsById(id)){
+            log.error("Could not find the movie you were looking for.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("Could not find movie with id %s",id));
         }
         Movie movie = movieRepository.findById(id).get();
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get();
         if (!user.getListOfLoans().contains(movie)){
+            log.warn("Attempt made to return a movie by unauthorized user.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You cannot return a movie you haven't borrowed.");
         }
         user.removeFromListOfLoans(movie);
@@ -116,6 +121,7 @@ public class MovieService {
 
     public void uploadMovieCover(MultipartFile file, String id) throws IOException {
         if (!movieRepository.existsById(id)){
+            log.error("Could not find the movie you were looking for.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("Could not find book with id %s",id));
         }
         Movie movie = movieRepository.findById(id).get();

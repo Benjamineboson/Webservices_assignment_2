@@ -65,6 +65,7 @@ public class NewsPaperController {
         return ResponseEntity.ok(newsPaperService.returnNewsPaper(id));
     }
 
+    @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/file/{id}")
     public void uploadNewsPaperCover(@RequestParam MultipartFile file, @PathVariable String id) throws IOException {

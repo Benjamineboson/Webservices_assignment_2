@@ -65,6 +65,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.returnMovie(id));
     }
 
+    @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/file/{id}")
     public void uploadMovieCover(@RequestParam MultipartFile file, @PathVariable String id) throws IOException {

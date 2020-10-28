@@ -65,6 +65,7 @@ public class GameController {
         return ResponseEntity.ok(gameService.returnGame(id));
     }
 
+    @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/file/{id}")
     public void uploadGameCover(@RequestParam MultipartFile file, @PathVariable String id) throws IOException {

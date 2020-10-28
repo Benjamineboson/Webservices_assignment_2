@@ -68,6 +68,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.returnBook(id));
     }
 
+    @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/file/{id}")
     public void uploadBookCover(@RequestParam MultipartFile file,@PathVariable String id) throws IOException {
